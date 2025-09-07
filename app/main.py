@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routers import posts, users, auth
+from routers import posts, users, auth, like
 from app import models
 from app.database import engine
 
@@ -15,11 +15,5 @@ def root():
 app.include_router(auth.router)
 app.include_router(posts.router)
 app.include_router(users.router)
-
-
-
-9.24.15
-
-
-
+app.include_router(like.router)
 

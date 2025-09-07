@@ -21,6 +21,8 @@ def get_posts(
         search: Optional[str] = ""):
     # post = db.query(models.Posts).filter(models.Posts.owner_id == current_user.id).all()
     posts = db.query(models.Posts).filter(models.Posts.title.contains(search)).limit(limit).offset(skip).all()
+    
+    results = db.query(models.Posts).join(models.like, models.like.post_id ==model)
 
     return posts
 
