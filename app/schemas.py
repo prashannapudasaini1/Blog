@@ -1,18 +1,23 @@
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
-from  pydantic.types import conint
+from pydantic.types import conint
 
 
-class postBased(BaseModel):
+# Post Schemas
+
+class PostBase(BaseModel):
     title: str
     content: str
     published: bool = False
     create_time: Optional[datetime] = None
 
 
-class postCreate(postBased):
+class PostCreate(PostBase):
     pass
+
+
+# User Schemas
 
 class UserOut(BaseModel):
     id: int
@@ -22,6 +27,9 @@ class UserOut(BaseModel):
     model_config = {
         "from_attributes": True
     }
+
+
+# Response Schemas
 
 class PostResponse(BaseModel):
     id: int
@@ -36,27 +44,39 @@ class PostResponse(BaseModel):
     }
 
 
+# Post + Likes
+class PostOut(BaseModel):
+    Post: PostResponse
+    likes: int
 
-class UserCreated(BaseModel):
+    model_config = {
+        "from_attributes": True
+    }
+
+
+# Auth Schemas
+
+class UserCreate(BaseModel):
     email: EmailStr
     password: str
-
 
 
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
+
 class Token(BaseModel):
     access_token: str
     token_type: str
 
+
 class TokenData(BaseModel):
-    id : Optional[str] = None
-    
+    id: Optional[str] = None
+
+
+# Like Schema
 
 class Like(BaseModel):
     post_id: int
-    dir: conint(le=1)
-    
-    
+    dir: conint(le=1)   # 0 = unlike, 1 = like
