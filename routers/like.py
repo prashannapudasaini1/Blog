@@ -13,7 +13,7 @@ def like(like: schemas.Like,db: Session = Depends(database.get_db),current_user:
     
     post = db.query(models.Posts).filter(models.Posts.id == like.post_id).first()
     if not post:
-        raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, detail= "Post with doesn't exist")
+        raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, detail= "Post doesn't exist")
     
     
      
@@ -21,7 +21,8 @@ def like(like: schemas.Like,db: Session = Depends(database.get_db),current_user:
     found_like = like_query.first()
     if(like.dir == 1):
         if found_like:
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT, details = f"user {current_user.id} ahve already like the post")
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT,detail=f"You have already liked the post")
+
         new_like = models.Like(post_id = like.post_id, user_id = current_user.id)
         db.add(new_like)
         db.commit()

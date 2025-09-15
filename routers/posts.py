@@ -12,19 +12,50 @@ router = APIRouter(
 
 
 
+# @router.get("/", response_model=List[schemas.PostResponse])
+# def get_posts(
+#         db: Session = Depends(get_db),
+#         current_user : int = Depends(oauth2.get_current_user),
+#         limit: int = 10,
+#         skip: int = 0,
+#         search: Optional[str] = ""):
+#     # post = db.query(models.Posts).filter(models.Posts.owner_id == current_user.id).all()
+#     posts = db.query(models.Posts).filter(models.Posts.title.contains(search)).limit(limit).offset(skip).all()
+    
+# results = (
+#     db.query(models.Posts,func.count(models.Like.post_id).label("likes")).join(models.Like, models.Like.post_id == models.Posts.id, isouter=True)
+#     .filter(models.Posts.title.contains(search))
+#     .group_by(models.Posts.id)
+#     .limit(limit)
+#     .offset(skip)
+#     .all()
+# )
+#     return posts
+
+
 @router.get("/", response_model=List[schemas.PostResponse])
 def get_posts(
-        db: Session = Depends(get_db),
-        current_user : int = Depends(oauth2.get_current_user),
-        limit: int = 10,
-        skip: int = 0,
-        search: Optional[str] = ""):
-    # post = db.query(models.Posts).filter(models.Posts.owner_id == current_user.id).all()
-    posts = db.query(models.Posts).filter(models.Posts.title.contains(search)).limit(limit).offset(skip).all()
-    
-    results = db.query(models.Posts).join(models.like, models.like.post_id ==model)
+    db: Session = Depends(get_db),
+    current_user: int = Depends(oauth2.get_current_user),
+    limit: int = 10,
+    skip: int = 0,
+    search: Optional[str] = ""
+):
+    posts = (
+        db.query(models.Posts)
+        .filter(models.Posts.title.contains(search))
+        .limit(limit)
+        .offset(skip)
+        .all()
+    )
+
+    results = (
+        db.query(models.Posts)
+        .join(models.Like, models.Like.post_id == models.Posts.id)
+    )
 
     return posts
+
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.PostResponse)
