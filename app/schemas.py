@@ -1,82 +1,103 @@
-from typing import Optional, List
+
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
+from typing import Optional
 from pydantic.types import conint
+from .models import Role
 
-
-# Post Schemas
-
-class PostBase(BaseModel):
-    title: str
-    content: str
-    published: bool = False
-    create_time: Optional[datetime] = None
-
-
-class PostCreate(PostBase):
-    pass
-
-
+# -------------------
 # User Schemas
+# -------------------
 
 class UserOut(BaseModel):
     id: int
-    email: EmailStr
-    create_time: datetime
+    email: str
+    role: Optional[Role] = None
 
-    model_config = {
-        "from_attributes": True
-    }
+    class Config:
+        form_attributes = True
 
-
-# Response Schemas
-
-class PostResponse(BaseModel):
+class UserResponse(BaseModel):
     id: int
-    title: str
-    content: str
-    published: bool
-    owner_id: int
-    owner: UserOut
+    email: EmailStr
+    role: Role
 
-    model_config = {
-        "from_attributes": True
-    }
-
-
-# Post + Likes
-class PostOut(BaseModel):
-    Post: PostResponse
-    likes: int
-
-    model_config = {
-        "from_attributes": True
-    }
-
-
-# Auth Schemas
+    class Config:
+        form_attributes = True
 
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
-
+    role: Optional[Role] = None  # Admin sets role automatically
 
 class UserLogin(BaseModel):
-    email: EmailStr
+    email: str
     password: str
 
+# -------------------
+# Token Schemas
+# -------------------
 
 class Token(BaseModel):
     access_token: str
     token_type: str
 
-
 class TokenData(BaseModel):
     id: Optional[str] = None
 
+# -------------------
+# Post Schemas
+# -------------------
 
-# Like Schema
+class Post(BaseModel):
+    title: str
+    content: str
+    published: bool = True
+    created_at: datetime
+    owner_id: int
+    owner: UserOut
+    vote: Optional[int] = 0
+    photo_path: Optional[str] = None 
 
-class Like(BaseModel):
+    class Config:
+       from_attributes = True
+
+class postBase(BaseModel):
+    title: str
+    content: str
+    published: bool = True
+
+class PostCreate(postBase):
+    pass
+
+class PostResponse(BaseModel):
+    title: str
+    content: str
+    published: bool
+    owner_id: int
+
+    class Config:
+        from_attributes = True
+
+# -------------------
+# Vote Schema
+# -------------------
+
+class vote(BaseModel):
     post_id: int
-    dir: conint(le=1)   # 0 = unlike, 1 = like
+    dir: conint(le=1)
+
+# -------------------
+# Comment Schemas
+# -------------------
+
+class CommentCreate(BaseModel):
+    text: str   # was 'content'
+
+class CommentResponse(BaseModel):
+    id: int
+    content: str   # was 'content'
+    user: UserOut   # was 'user'
+
+    class Config:
+        from_attributes = True
