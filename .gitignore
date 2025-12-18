@@ -1,5 +1,10 @@
-# Ignore Blog folder
+# Ignore Blog folder (backend)
 Blog/
+
+# Python
+venv/
+.env
+__pycache__
 
 # OS files
 .DS_Store
@@ -10,4 +15,3 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
-
